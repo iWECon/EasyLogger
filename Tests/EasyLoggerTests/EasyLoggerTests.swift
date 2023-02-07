@@ -11,7 +11,7 @@ final class EasyLoggerTests: XCTestCase {
             EasyLogger(label: value, logLevel: .trace, outputs:  { label, level in
                 [
                     DefaultOutput(label: label, level: level),
-                    WriteOutput(label: "WriteOutput", level: .trace)
+                    WriteOutput(level: .trace)
                 ]
             })
         }

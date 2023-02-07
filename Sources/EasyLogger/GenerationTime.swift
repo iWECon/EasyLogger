@@ -8,19 +8,27 @@
 import Foundation
 
 public protocol GenerationTime {
-    static func timestamp() -> String
+    func timestamp() -> String
 }
 
 public struct DefaultGenerationTime: GenerationTime {
-    private init() { }
     
-    public static func timestamp() -> String {
+    public let dateFormat: String
+    public init(dateFormat: String? = nil) {
+        if let dateFormat {
+            self.dateFormat = dateFormat
+        } else {
+            #if DEBUG
+            self.dateFormat = "[HH:mm:ss.SSS]"
+            #else
+            self.dateFormat = "[YYYYMMdd HH:mm:ss.SSS]"
+            #endif
+        }
+    }
+    
+    public func timestamp() -> String {
         let formatter = DateFormatter()
-        #if DEBUG
-        formatter.dateFormat = "HH:mm:ss.SSS"
-        #else
-        formatter.dateFormat = "YYYYMMdd HH:mm:ss.SSS"
-        #endif
-        return formatter.string(from: Date())
+        formatter.dateFormat = self.dateFormat
+        return "\(formatter.string(from: Date()))"
     }
 }

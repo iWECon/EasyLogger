@@ -20,7 +20,7 @@ public struct EasyLogger: LogHandler {
     @usableFromInline
     let label: String
     
-    public let generationTime: GenerationTime.Type
+    public let generationTime: any GenerationTime
     public let transform: any Transform
     public let outputs: [Output]
     
@@ -30,7 +30,7 @@ public struct EasyLogger: LogHandler {
         label: String,
         logLevel: Logging.Logger.Level,
         operationQueue: SendableOperationQueue? = nil,
-        generationTime: GenerationTime.Type = DefaultGenerationTime.self,
+        generationTime: any GenerationTime = DefaultGenerationTime(),
         transform: (_ label: String) -> Transform = { label in
             DefaultTransform(label: label)
         },
