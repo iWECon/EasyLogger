@@ -11,9 +11,16 @@ final class EasyLoggerTests: XCTestCase {
             EasyLogger(label: value, logLevel: .trace, outputs:  { label, level in
                 [
                     DefaultOutput(label: label, level: level),
+                    ConsoleOutput(label: label, level: level),
                     WriteOutput(level: .trace)
                 ]
             })
         }
+        
+        // output
+        let logger = Logger(label: "test-console-output")
+        logger.error("test happend error")
+        logger.warning("test warning")
+        logger.info("test info")
     }
 }
