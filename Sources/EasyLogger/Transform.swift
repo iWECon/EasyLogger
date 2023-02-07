@@ -18,17 +18,23 @@ public protocol Transform {
     ) -> String
 }
 
-public struct DefaultTransform: Transform {
+public protocol AssemblyMessage {
     
-    @usableFromInline
-    let label: String
-    
-    public init(label: String) {
-        self.label = label
-    }
-    
-    public func transform(level: Logger.Level, message: Logging.Logger.Message, metadata: Logger.Metadata?, source: String, file: String, function: String, line: UInt) -> String {
-        
+    static func assembly(
+        label: String, level: String,
+        message: Logging.Logger.Message,
+        metadataDescribe: String?,
+        source: String, file: String, function: String, line: UInt
+    ) -> String
+}
+
+public struct DefaultAssemblyMessage: AssemblyMessage {
+    public static func assembly(
+        label: String, level: String,
+        message: Logging.Logger.Message,
+        metadataDescribe: String?,
+        source: String, file: String, function: String, line: UInt) -> String
+    {
         let fileName: String
         if #available(iOS 16.0, *) {
             fileName = URL(filePath: file).lastPathComponent
@@ -36,9 +42,32 @@ public struct DefaultTransform: Transform {
             fileName = URL(fileURLWithPath: file).lastPathComponent
         }
         
+        let extraInfo = " { Module: \(source), Track: \(fileName):\(line) > \(function) }"
+        return "[\(level.uppercased())] > \(message) < [\(label)]\(metadataDescribe.map { " \($0)" } ?? "")\(extraInfo)"
+    }
+}
+
+public struct DefaultTransform: Transform {
+    
+    @usableFromInline
+    let label: String
+    
+    let assemblyMessage: AssemblyMessage.Type
+    
+    public init(label: String, assemblyMessage: AssemblyMessage.Type = DefaultAssemblyMessage.self) {
+        self.label = label
+        self.assemblyMessage = assemblyMessage
+    }
+    
+    public func transform(level: Logger.Level, message: Logging.Logger.Message, metadata: Logger.Metadata?, source: String, file: String, function: String, line: UInt) -> String {
         let metadataDescribe = self.prettyMetadata(metadata)
-        let extraInfo = " { SOURCE: \(source), TRACK: \(fileName):\(line) > \(function) }"
-        return "[\(level.rawValue.uppercased())] [\(label)] > \(message) <\(metadataDescribe.map { " \($0)" } ?? "")\(extraInfo)"
+        return assemblyMessage.assembly(
+            label: label,
+            level: level.rawValue,
+            message: message,
+            metadataDescribe: metadataDescribe,
+            source: source, file: file, function: function, line: line
+        )
     }
     
     internal func prettyMetadata(_ metadata: Logging.Logger.Metadata?) -> String? {
