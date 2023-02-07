@@ -25,7 +25,7 @@ LoggingSystem.bootstrap { label in
 
 let logger = Logger(label: "network", level)
 logger.trace("network response") // will not output
-logger.info("info response") // will not output
+logger.info("info response") // output
 logger.error("error") // output and write to local file
 logger.report(error: error) // output and write to local file
 ```
