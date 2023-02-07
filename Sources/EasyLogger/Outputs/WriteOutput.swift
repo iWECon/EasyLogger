@@ -47,8 +47,8 @@ public struct WriteOutput: Output {
     
     /// Create WriteOutput.
     /// - Parameters:
-    ///   - label: <#label description#>
-    ///   - level: <#level description#>
+    ///   - label: label
+    ///   - level: log level
     ///   - localDirectory: Default is `FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first`.
     ///   - delimiter: Default is `   \n`.
     public init(
@@ -107,14 +107,7 @@ public struct WriteOutput: Output {
     public func output(label: String, level: Logging.Logger.Level, timestamp: String, message: String) {
         guard level.naturalValue >= self.level.naturalValue else { return }
         
-        let output: String
-        if label != self.label {
-            let newMessage = message.replacingOccurrences(of: "", with: "")
-            output = "\(timestamp) \(newMessage)"
-        } else {
-            output = "\(timestamp) \(message)"
-        }
-        
+        let output: String = "\(timestamp) \(message)"
         do {
             try FileManager.default.createDirectory(at: self.localDirectory, withIntermediateDirectories: true)
             

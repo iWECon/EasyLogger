@@ -1,46 +1,10 @@
 import Foundation
 import Logging
 
-extension Logger {
+struct LoggerQueue {
+    static var shared = LoggerQueue()
     
-    func report(
-        error: @autoclosure () -> Swift.Error,
-        metadata: @autoclosure () -> Logging.Logger.Metadata? = nil,
-        source: @autoclosure () -> String? = nil,
-        file: String = #fileID, function: String = #function, line: UInt = #line
-    ) {
-        self.error(
-            "\(error().localizedDescription)", metadata: metadata(),
-            source: source(), file: file, function: function, line: line
-        )
-    }
-}
-
-extension Logging.Logger.Level {
-    var naturalValue: Int {
-        switch self {
-        case .trace:
-            return 0
-        case .debug:
-            return 1
-        case .info:
-            return 2
-        case .notice:
-            return 3
-        case .warning:
-            return 4
-        case .error:
-            return 5
-        case .critical:
-            return 6
-        }
-    }
-}
-
-struct GlobalQueue {
-    static var shared = GlobalQueue()
-    
-    let queue: OperationQueue = .init()
+    let queue = SendableOperationQueue()
     private init() {
         queue.maxConcurrentOperationCount = 1
         queue.name = "in.iiiam.logger.queue"
@@ -60,12 +24,12 @@ public struct EasyLogger: LogHandler {
     public let transform: any Transform
     public let outputs: [Output]
     
-    let operationQueue: OperationQueue
+    let operationQueue: SendableOperationQueue
     
     public init(
         label: String,
         logLevel: Logging.Logger.Level,
-        operationQueue: OperationQueue? = nil,
+        operationQueue: SendableOperationQueue? = nil,
         generationTime: GenerationTime.Type = DefaultGenerationTime.self,
         transform: (_ label: String) -> Transform = { label in
             DefaultTransform(label: label)
@@ -76,7 +40,7 @@ public struct EasyLogger: LogHandler {
     ) {
         self.label = label
         self.logLevel = logLevel
-        self.operationQueue = operationQueue ?? GlobalQueue.shared.queue
+        self.operationQueue = operationQueue ?? LoggerQueue.shared.queue
         
         self.generationTime = generationTime
         self.transform = transform(label)
