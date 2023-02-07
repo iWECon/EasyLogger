@@ -29,6 +29,6 @@ public struct DefaultGenerationTime: GenerationTime {
     public func timestamp() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = self.dateFormat
-        return formatter.string(from: Date()))
+        return formatter.string(from: Date())
     }
 }
