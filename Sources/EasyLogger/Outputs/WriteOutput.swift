@@ -20,6 +20,16 @@ import WASILibc
 #error("Unsupported runtime")
 #endif
 
+extension URL {
+    
+    func outputPath(percentEncoded: Bool = true) -> String {
+        if #available(iOS 16.0, *) {
+            return self.path(percentEncoded: percentEncoded)
+        }
+        return self.path
+    }
+}
+
 /// Write output to local.
 public struct WriteOutput: Output {
     
@@ -30,7 +40,7 @@ public struct WriteOutput: Output {
     
     public var localDirectory: URL {
         didSet {
-            print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.path()), fileName: \(self.currentLogName)")
+            print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.outputPath()), fileName: \(self.currentLogName)")
         }
     }
     public var delimiter: String
@@ -58,7 +68,14 @@ public struct WriteOutput: Output {
             guard let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
                 fatalError("Can't access .cachesDirectory in .userDomainMask")
             }
-            self.localDirectory = cachesDirectory.appending(path: "\(Bundle.main.bundleIdentifier ?? "in.iiiam.logger")/logger-caches")
+            
+            let subpath = "\(Bundle.main.bundleIdentifier ?? "in.iiiam.logger")/logger-caches"
+            if #available(iOS 16.0, *) {
+                self.localDirectory = cachesDirectory.appending(path: subpath)
+            } else {
+                // Fallback on earlier versions
+                self.localDirectory = cachesDirectory.appendingPathComponent(subpath)
+            }
         }
         
         func nameTimestamp() -> String {
@@ -84,7 +101,7 @@ public struct WriteOutput: Output {
         }
         self.currentLogName = "logger-\(nameTimestamp()).log"
         
-        print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.path()), fileName: \(self.currentLogName)")
+        print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.outputPath()), fileName: \(self.currentLogName)")
     }
     
     public func output(label: String, level: Logging.Logger.Level, timestamp: String, message: String) {
@@ -101,20 +118,44 @@ public struct WriteOutput: Output {
         do {
             try FileManager.default.createDirectory(at: self.localDirectory, withIntermediateDirectories: true)
             
-            let fileURL = localDirectory.appending(path: self.currentLogName)
+            let fileURL: URL
+            if #available(iOS 16.0, *) {
+                fileURL = localDirectory.appending(path: self.currentLogName)
+            } else {
+                // Fallback on earlier versions
+                fileURL = localDirectory.appendingPathComponent(self.currentLogName)
+            }
             
-            if !FileManager.default.fileExists(atPath: fileURL.path()) {
-                FileManager.default.createFile(atPath: fileURL.path(), contents: nil)
+            if !FileManager.default.fileExists(atPath: fileURL.outputPath()) {
+                FileManager.default.createFile(atPath: fileURL.outputPath(), contents: nil)
             }
             
             let fileHandle = try FileHandle(forWritingTo: fileURL)
-            try fileHandle.seekToEnd()
+            if #available(iOS 13.4, *) {
+                try fileHandle.seekToEnd()
+            } else {
+                fileHandle.seekToEndOfFile()
+            }
             guard let content = "\(output)\(delimiter)".data(using: .utf8) else {
-                try fileHandle.close()
+                if #available(iOS 13.0, *) {
+                    try fileHandle.close()
+                } else {
+                    fileHandle.closeFile()
+                }
                 return
             }
-            try fileHandle.write(contentsOf: content)
-            try fileHandle.close()
+            
+            if #available(iOS 13.4, *) {
+                try fileHandle.write(contentsOf: content)
+            } else {
+                fileHandle.write(content)
+            }
+            
+            if #available(iOS 13.0, *) {
+                try fileHandle.close()
+            } else {
+                fileHandle.closeFile()
+            }
         } catch {
             print("[EasyLogger] [WriteOutput] > Write failed: \(error.localizedDescription)")
         }
