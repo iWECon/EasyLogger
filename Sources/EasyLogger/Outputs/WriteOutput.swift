@@ -45,6 +45,8 @@ public struct WriteOutput: Output {
     }
     public var delimiter: String
     
+    let logFileURL: URL?
+    
     /// Create WriteOutput.
     /// - Parameters:
     ///   - level: log level
@@ -99,29 +101,37 @@ public struct WriteOutput: Output {
         }
         self.currentLogName = "logger-\(nameTimestamp()).log"
         
-        print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.outputPath()), fileName: \(self.currentLogName)")
-    }
-    
-    public func output(label: String, level: Logging.Logger.Level, timestamp: String, message: String) {
-        guard level.naturalValue >= self.level.naturalValue else { return }
-        
-        let output: String = "\(timestamp) \(message)"
+        // Create Dir
         do {
             try FileManager.default.createDirectory(at: self.localDirectory, withIntermediateDirectories: true)
             
             let fileURL: URL
             if #available(iOS 16.0, *) {
-                fileURL = localDirectory.appending(path: self.currentLogName)
+                fileURL = self.localDirectory.appending(path: self.currentLogName)
             } else {
                 // Fallback on earlier versions
-                fileURL = localDirectory.appendingPathComponent(self.currentLogName)
+                fileURL = self.localDirectory.appendingPathComponent(self.currentLogName)
             }
+            self.logFileURL = fileURL
             
+            // Create Log File
             if !FileManager.default.fileExists(atPath: fileURL.outputPath()) {
                 FileManager.default.createFile(atPath: fileURL.outputPath(), contents: nil)
             }
-            
-            let fileHandle = try FileHandle(forWritingTo: fileURL)
+            print("[EasyLogger] [WriteOutput] > Local Directory: \(self.localDirectory.outputPath()), fileName: \(self.currentLogName)")
+        } catch {
+            self.logFileURL = nil
+            print("[EasyLogger] [WriteOutput] > create dir failed: \(error.localizedDescription)")
+            assertionFailure("Create dir failed: \(error.localizedDescription)")
+        }
+    }
+    
+    public func output(label: String, level: Logging.Logger.Level, timestamp: String, message: String) {
+        guard level.naturalValue >= self.level.naturalValue, let logFileURL else { return }
+        
+        let output: String = "\(timestamp) \(message)"
+        do {
+            let fileHandle = try FileHandle(forWritingTo: logFileURL)
             if #available(iOS 13.4, *) {
                 try fileHandle.seekToEnd()
             } else {
