@@ -47,17 +47,15 @@ public struct WriteOutput: Output {
     
     /// Create WriteOutput.
     /// - Parameters:
-    ///   - label: label
     ///   - level: log level
     ///   - localDirectory: Default is `FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first`.
     ///   - delimiter: Default is `   \n`.
     public init(
-        label: String,
         level: Logging.Logger.Level,
         localDirectory: URL? = nil,
         delimiter: String = "   \n")
     {
-        self.label = label
+        self.label = "write-output"
         self.level = level
         
         self.delimiter = delimiter
