@@ -29,19 +29,8 @@ public struct WriteOutputConfigure {
     /// Defaults to `File Manager.default.urls(for: .caches Directory, in: .user Domain Mask).first`.
     public var localCacheDirectory: URL {
         didSet {
-            do {
-                // remove old directory
-                try FileManager.default.removeItem(at: oldValue)
-                try FileManager.default.createDirectory(at: localCacheDirectory, withIntermediateDirectories: true)
-                
-                defer {
-                    print("[WriteOutputConfigure] [localCacheDirectory.didSet] current log save path: \(currentLogFilePath.outputPath())")
-                }
-                guard !FileManager.default.fileExists(atPath: currentLogFilePath.outputPath()) else { return }
-                FileManager.default.createFile(atPath: currentLogFilePath.outputPath(), contents: nil)
-            } catch {
-                print("[WriteOutputConfigure] [localCacheDirectory.didSet] failed: \(error.localizedDescription)")
-            }
+            removeOldCacheDir(oldDir: oldValue)
+            createCacheAndLogFile()
         }
     }
     
@@ -84,6 +73,29 @@ public struct WriteOutputConfigure {
             self.localCacheDirectory = localCacheDirectory.appending(path: subpath)
         } else {
             self.localCacheDirectory = localCacheDirectory.appendingPathComponent(subpath)
+        }
+        
+        self.createCacheAndLogFile()
+    }
+    
+    private func removeOldCacheDir(oldDir: URL) {
+        do {
+            try FileManager.default.removeItem(at: oldDir)
+        } catch {
+            print("[WriteOutputConfigure] [localCacheDirectory.didSet] [removeOldCacheDir] > failed: \(error.localizedDescription)")
+        }
+    }
+    
+    private func createCacheAndLogFile() {
+        do {
+            try FileManager.default.createDirectory(at: localCacheDirectory, withIntermediateDirectories: true)
+            defer {
+                print("[WriteOutputConfigure] [localCacheDirectory.didSet] > current log save path: \(currentLogFilePath.outputPath())")
+            }
+            guard !FileManager.default.fileExists(atPath: currentLogFilePath.outputPath()) else { return }
+            FileManager.default.createFile(atPath: currentLogFilePath.outputPath(), contents: nil)
+        } catch {
+            print("[WriteOutputConfigure] [createCacheAndLogFile] > failed: \(error.localizedDescription)")
         }
     }
 }
