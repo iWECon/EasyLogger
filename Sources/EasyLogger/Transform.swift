@@ -43,7 +43,7 @@ public struct DefaultAssemblyMessage: AssemblyMessage {
         }
         
         let extraInfo = " { Module: \(source), Track: \(fileName):\(line) > \(function) }"
-        return "[\(level.uppercased())] > \(message) < [\(label)]\(metadataDescribe.map { " \($0)" } ?? "")\(extraInfo)"
+        return "[\(level.uppercased())] [\(label)] > \(message) <\(metadataDescribe.map { " \($0)" } ?? "")\(extraInfo)"
     }
 }
 
