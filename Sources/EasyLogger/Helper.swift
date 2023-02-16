@@ -8,6 +8,43 @@
 import Foundation
 import Logging
 
+// MARK: - MetadataValue
+extension Logger.MetadataValue {
+    public static func bool(_ value: Bool) -> Self {
+        self.string("\(value)")
+    }
+    public static func integer(_ value: IntegerLiteralType) -> Self {
+        self.string("\(value)")
+    }
+    public static func float(_ value: FloatLiteralType) -> Self {
+        self.string("\(value)")
+    }
+    public static func `nil`() -> Self {
+        self.string("nil")
+    }
+}
+extension Logger.MetadataValue: ExpressibleByBooleanLiteral {
+    public init(booleanLiteral value: BooleanLiteralType) {
+        self.init(stringLiteral: "\(value)")
+    }
+}
+extension Logger.MetadataValue: ExpressibleByIntegerLiteral {
+    public init(integerLiteral value: IntegerLiteralType) {
+        self.init(stringLiteral: "\(value)")
+    }
+}
+extension Logger.MetadataValue: ExpressibleByFloatLiteral {
+    public init(floatLiteral value: FloatLiteralType) {
+        self.init(stringLiteral: "\(value)")
+    }
+}
+extension Logger.MetadataValue: ExpressibleByNilLiteral {
+    public init(nilLiteral: ()) {
+        self.init(stringLiteral: "nil")
+    }
+}
+
+// MARK: - Report error
 extension Logger {
     
     public func report(

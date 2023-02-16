@@ -20,6 +20,7 @@ final class EasyLoggerTests: XCTestCase {
         
         // output
         let logger = Logger(label: "test-console-output")
+        logger.info("yes", metadata: ["abc": "1", "isOpen": true, "price": 1.0, "int": 10, "isNil": nil])
         logger.error("test happend error")
         logger.warning("test warning")
         logger.info("test info")
