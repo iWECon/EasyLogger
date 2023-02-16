@@ -22,25 +22,33 @@ extension Logger.MetadataValue {
     public static func `nil`() -> Self {
         self.string("nil")
     }
+    public static func `optional`<V>(_ value: Optional<V>) -> Self {
+        switch value {
+        case .none:
+            return self.string("nil")
+        case .some(let wrappedValue):
+            return self.string("\(wrappedValue)")
+        }
+    }
 }
 extension Logger.MetadataValue: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: BooleanLiteralType) {
-        self.init(stringLiteral: "\(value)")
+        self = .bool(value)
     }
 }
 extension Logger.MetadataValue: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
-        self.init(stringLiteral: "\(value)")
+        self = .integer(value)
     }
 }
 extension Logger.MetadataValue: ExpressibleByFloatLiteral {
     public init(floatLiteral value: FloatLiteralType) {
-        self.init(stringLiteral: "\(value)")
+        self = .float(value)
     }
 }
 extension Logger.MetadataValue: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
-        self.init(stringLiteral: "nil")
+        self = .nil()
     }
 }
 

@@ -66,6 +66,7 @@ public struct EasyLogger: LogHandler {
             let output = self.transform.transform(
                 level: level,
                 message: message,
+                baseMetadata: self.metadata,
                 metadata: metadata,
                 source: source, file: file, function: function, line: line
             )
