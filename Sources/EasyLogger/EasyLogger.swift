@@ -29,7 +29,7 @@ public struct EasyLogger: LogHandler {
     public init(
         label: String,
         logLevel: Logging.Logger.Level,
-        operationQueue: SendableOperationQueue? = nil,
+        queue: SendableOperationQueue? = nil,
         generationTime: any GenerationTime = DefaultGenerationTime(),
         transform: (_ label: String) -> Transform = { label in
             DefaultTransform(label: label)
@@ -40,7 +40,7 @@ public struct EasyLogger: LogHandler {
     ) {
         self.label = label
         self.logLevel = logLevel
-        self.operationQueue = operationQueue ?? LoggerQueue.shared.queue
+        self.operationQueue = queue ?? LoggerQueue.shared.queue
         
         self.generationTime = generationTime
         self.transform = transform(label)

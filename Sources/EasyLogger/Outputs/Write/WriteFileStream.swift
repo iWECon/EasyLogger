@@ -31,7 +31,7 @@ public struct WriteFileStream: TextOutputStream {
             do {
                 try fileHandle.write(contentsOf: data)
             } catch {
-                print("[WriteFileStream] [write] failed: \(error.localizedDescription)")
+                print("[EasyLogger] [WriteFileStream] [write] failed: \(error.localizedDescription)")
             }
         } else {
             fileHandle.write(data)

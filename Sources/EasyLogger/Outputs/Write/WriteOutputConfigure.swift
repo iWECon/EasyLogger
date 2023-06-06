@@ -20,7 +20,16 @@ import WASILibc
 
 /// This configuration should be changed before using `Logger`, or use `lazy var` to delay `Logger.init'.
 public struct WriteOutputConfigure {
+    
     public static var `default` = WriteOutputConfigure()
+    
+    /// The maximum number of days of storage. Default is `7 days`.
+    ///
+    /// Each time the log file is started to determine whether it contains files that exceed that number of days,
+    /// and if it exceeds it, delete it.
+    public var maximumStorageTime: Double = 7 * 24 * 60 * 60
+    
+    public var clearEmptyLogFiles: Bool = true
     
     /// The name of the currently stored log (automatically generated each time the app is cold-started).
     public var currentLogName: String
@@ -78,11 +87,35 @@ public struct WriteOutputConfigure {
         self.createCacheAndLogFile()
     }
     
+    func detectOldLogFilesAndDelete() {
+        do {
+            let contentFiles = try FileManager.default.contentsOfDirectory(at: self.localCacheDirectory, includingPropertiesForKeys: nil)
+            for file in contentFiles {
+                guard file != self.currentLogFilePath else { continue }
+                
+                let attributes = try FileManager.default.attributesOfItem(atPath: file.relativePath)
+                guard let createDate = attributes[.creationDate] as? Date else {
+                    continue
+                }
+                
+                let isOutOfTime = abs(Date().timeIntervalSince1970 - createDate.timeIntervalSince1970) > self.maximumStorageTime
+                let isEmptyContent = (attributes[.size] as? UInt64 ?? 0) == 0
+                guard isOutOfTime || (self.clearEmptyLogFiles && isEmptyContent) else {
+                    continue
+                }
+                // delete file out of maximumStorageDays
+                try FileManager.default.removeItem(at: file)
+            }
+        } catch {
+            print("[EasyLogger] [WriteOutputConfigure] [autoDetectOldFilesAndDelete] > failed: \(error.localizedDescription)")
+        }
+    }
+    
     private func removeOldCacheDir(oldDir: URL) {
         do {
             try FileManager.default.removeItem(at: oldDir)
         } catch {
-            print("[WriteOutputConfigure] [localCacheDirectory.didSet] [removeOldCacheDir] > failed: \(error.localizedDescription)")
+            print("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] [removeOldCacheDir] > failed: \(error.localizedDescription)")
         }
     }
     
@@ -90,12 +123,12 @@ public struct WriteOutputConfigure {
         do {
             try FileManager.default.createDirectory(at: localCacheDirectory, withIntermediateDirectories: true)
             defer {
-                print("[WriteOutputConfigure] [localCacheDirectory.didSet] > current log save path: \(currentLogFilePath.outputPath())")
+                print("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] > current log save path: \(currentLogFilePath.outputPath())")
             }
             guard !FileManager.default.fileExists(atPath: currentLogFilePath.outputPath()) else { return }
             FileManager.default.createFile(atPath: currentLogFilePath.outputPath(), contents: nil)
         } catch {
-            print("[WriteOutputConfigure] [createCacheAndLogFile] > failed: \(error.localizedDescription)")
+            print("[EasyLogger] [WriteOutputConfigure] [createCacheAndLogFile] > failed: \(error.localizedDescription)")
         }
     }
 }

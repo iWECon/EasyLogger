@@ -8,7 +8,6 @@
 import Foundation
 import Logging
 
-
 extension URL {
     
     func outputPath(percentEncoded: Bool = true) -> String {
@@ -36,12 +35,14 @@ public struct WriteOutput: Output {
         self.label = "write-output"
         self.level = level
         
+        WriteOutputConfigure.default.detectOldLogFilesAndDelete()
+        
         do {
             let fileHandle = try FileHandle(forWritingTo: WriteOutputConfigure.default.currentLogFilePath)
             self.stream = try WriteFileStream(fileHandle: fileHandle)
         } catch {
             self.stream = nil
-            print("[WriteOutput] [init] failed: \(error.localizedDescription)")
+            print("[EasyLogger] [WriteOutput] [init] failed: \(error.localizedDescription)")
         }
     }
     
