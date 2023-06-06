@@ -62,7 +62,7 @@ public struct ConsoleOutput: Output {
     public init(label: String, level: Logging.Logger.Level, disableWhenRunXcode: Bool = true, subsystem: String = Bundle.main.bundleIdentifier ?? "in.iiiam.logger") {
         self.label = label
         self.level = level
-        self.disableWhenRunXcode = true
+        self.disableWhenRunXcode = disableWhenRunXcode
         self.osLog = OSLog(subsystem: subsystem, category: label)
     }
     
