@@ -43,7 +43,12 @@ public struct DefaultAssemblyMessage: AssemblyMessage {
             fileName = URL(fileURLWithPath: file).lastPathComponent
         }
         
-        let extraInfo = " { Module: \(source), Track: \(fileName):\(line) > \(function) }"
+        let extraInfo: String
+        if source.isEmpty {
+            extraInfo = " { Track: \(fileName):\(line) > \(function) }"
+        } else {
+            extraInfo = " { Module: \(source), Track: \(fileName):\(line) > \(function) }"
+        }
         return "[\(level.uppercased())] [\(label)] > \(message) <\(metadataDescribe ?? "")\(extraInfo)"
     }
 }
