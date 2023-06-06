@@ -38,9 +38,9 @@ fileprivate extension Logging.Logger.Level {
         case .trace:
             return OSLogType.default
         case .debug:
-            return OSLogType.info
-        case .info, .notice, .warning:
             return OSLogType.debug
+        case .info, .notice, .warning:
+            return OSLogType.info
         case .error:
             return OSLogType.error
         case .critical:
@@ -49,6 +49,17 @@ fileprivate extension Logging.Logger.Level {
     }
 }
 
+/// Send log to `Console.app` (macOS App)
+///
+/// Apple has disabled this behavior for privacy reasons.
+/// So the structure is only visible in the console.app when xcode is running.
+///
+/// Logs seem to be optimized on `macOS Ventura` to only show `<private>`.
+///
+/// Apple provides methods to parse <private> content, so you can do it yourself.
+/// refer: https://developer.apple.com/forums/thread/676706
+///        https://superuser.com/questions/1532031/how-to-show-private-data-in-macos-unified-log
+///
 public struct ConsoleOutput: Output {
     
     public var label: String
