@@ -8,6 +8,8 @@ final class EasyLoggerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         
+        WriteOutputConfigure.default.maximumStorageTime = 200
+        
         LoggingSystem.bootstrap { value in
             return EasyLogger(label: value, logLevel: .trace, outputs:  { label, level in
                 [
