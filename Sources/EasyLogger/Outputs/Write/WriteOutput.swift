@@ -42,7 +42,7 @@ public struct WriteOutput: Output {
             self.stream = try WriteFileStream(fileHandle: fileHandle)
         } catch {
             self.stream = nil
-            print("[EasyLogger] [WriteOutput] [init] failed: \(error.localizedDescription)")
+            assertionFailure("[EasyLogger] [WriteOutput] [init] failed: \(error.localizedDescription)")
         }
     }
     

@@ -91,7 +91,7 @@ public struct WriteOutputConfigure {
         do {
             let contentFiles = try FileManager.default.contentsOfDirectory(at: self.localCacheDirectory, includingPropertiesForKeys: nil)
             for file in contentFiles {
-                guard file != self.currentLogFilePath else { continue }
+                guard file.lastPathComponent != self.currentLogFilePath.lastPathComponent else { continue }
                 
                 let attributes = try FileManager.default.attributesOfItem(atPath: file.relativePath)
                 guard let createDate = attributes[.creationDate] as? Date else {
@@ -107,7 +107,7 @@ public struct WriteOutputConfigure {
                 try FileManager.default.removeItem(at: file)
             }
         } catch {
-            print("[EasyLogger] [WriteOutputConfigure] [autoDetectOldFilesAndDelete] > failed: \(error.localizedDescription)")
+            assertionFailure("[EasyLogger] [WriteOutputConfigure] [autoDetectOldFilesAndDelete] > failed: \(error.localizedDescription)")
         }
     }
     
@@ -115,20 +115,21 @@ public struct WriteOutputConfigure {
         do {
             try FileManager.default.removeItem(at: oldDir)
         } catch {
-            print("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] [removeOldCacheDir] > failed: \(error.localizedDescription)")
+            assertionFailure("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] [removeOldCacheDir] > failed: \(error.localizedDescription)")
         }
     }
     
     private func createCacheAndLogFile() {
         do {
             try FileManager.default.createDirectory(at: localCacheDirectory, withIntermediateDirectories: true)
-            defer {
-                print("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] > current log save path: \(currentLogFilePath.outputPath())")
-            }
             guard !FileManager.default.fileExists(atPath: currentLogFilePath.outputPath()) else { return }
-            FileManager.default.createFile(atPath: currentLogFilePath.outputPath(), contents: nil)
+            guard FileManager.default.createFile(atPath: currentLogFilePath.outputPath(), contents: nil) else {
+                assertionFailure("[EasyLogger] [WriteOutputConfigure] create log file failed")
+                return
+            }
+            print("[EasyLogger] [WriteOutputConfigure] [localCacheDirectory.didSet] > current log save path: \(currentLogFilePath.outputPath())")
         } catch {
-            print("[EasyLogger] [WriteOutputConfigure] [createCacheAndLogFile] > failed: \(error.localizedDescription)")
+            assertionFailure("[EasyLogger] [WriteOutputConfigure] [createCacheAndLogFile] > failed: \(error.localizedDescription)")
         }
     }
 }
