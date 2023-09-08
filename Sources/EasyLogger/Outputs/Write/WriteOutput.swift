@@ -11,7 +11,7 @@ import Logging
 extension URL {
     
     func outputPath(percentEncoded: Bool = true) -> String {
-        if #available(iOS 16.0, *) {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
             return self.path(percentEncoded: percentEncoded)
         }
         return self.path
