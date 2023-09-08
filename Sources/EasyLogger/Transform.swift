@@ -37,7 +37,7 @@ public struct DefaultAssemblyMessage: AssemblyMessage {
         source: String, file: String, function: String, line: UInt) -> String
     {
         let fileName: String
-        if #available(iOS 16.0, *) {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
             fileName = URL(filePath: file).lastPathComponent
         } else {
             fileName = URL(fileURLWithPath: file).lastPathComponent

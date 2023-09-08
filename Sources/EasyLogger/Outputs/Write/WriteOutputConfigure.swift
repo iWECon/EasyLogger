@@ -46,7 +46,7 @@ public struct WriteOutputConfigure {
     /// Readonly. The specific path where logs are currently stored.
     /// `localCacheDirectory` is concatenated with `currentLogName`.
     public var currentLogFilePath: URL {
-        if #available(iOS 16.0, *) {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
             return localCacheDirectory.appending(path: currentLogName)
         }
         return localCacheDirectory.appendingPathComponent(currentLogName)
@@ -71,14 +71,14 @@ public struct WriteOutputConfigure {
         self.currentLogName = "logger-\(nameTimestamp()).log"
         
         let localCacheDirectory: URL
-        if #available(iOS 16.0, *) {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
             localCacheDirectory = .cachesDirectory
         } else {
             localCacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         }
         // - subpath
         let subpath = "\(Bundle.main.bundleIdentifier ?? "in.iiiam.logger")/logger-caches"
-        if #available(iOS 16.0, *) {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
             self.localCacheDirectory = localCacheDirectory.appending(path: subpath)
         } else {
             self.localCacheDirectory = localCacheDirectory.appendingPathComponent(subpath)

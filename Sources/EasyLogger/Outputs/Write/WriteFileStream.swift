@@ -14,7 +14,7 @@ public struct WriteFileStream: TextOutputStream {
     
     public init(fileHandle: FileHandle, encoding: String.Encoding = .utf8) throws {
         self.fileHandle = fileHandle
-        if #available(iOS 13.4, *) {
+        if #available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *) {
             try fileHandle.seekToEnd()
         } else {
             fileHandle.seekToEndOfFile()
@@ -27,7 +27,7 @@ public struct WriteFileStream: TextOutputStream {
             return
         }
         
-        if #available(iOS 13.4, *) {
+        if #available(macOS 10.15.4, iOS 13.4, watchOS 6.2, tvOS 13.4, *) {
             do {
                 try fileHandle.write(contentsOf: data)
             } catch {
