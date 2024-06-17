@@ -8,7 +8,7 @@
 import Foundation
 import Logging
 
-public protocol Output {
+public protocol Output: Sendable {
     var label: String { get }
     var level: Logging.Logger.Level { get }
     

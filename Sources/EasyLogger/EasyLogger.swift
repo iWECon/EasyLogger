@@ -1,7 +1,8 @@
 import Foundation
 import Logging
 
-struct LoggerQueue {
+struct LoggerQueue: Sendable {
+    
     static var shared = LoggerQueue()
     
     let queue = SendableOperationQueue()

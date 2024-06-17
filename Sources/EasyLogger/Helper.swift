@@ -31,22 +31,22 @@ extension Logger.MetadataValue {
         }
     }
 }
-extension Logger.MetadataValue: ExpressibleByBooleanLiteral {
+extension Logger.MetadataValue: @retroactive ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: BooleanLiteralType) {
         self = .bool(value)
     }
 }
-extension Logger.MetadataValue: ExpressibleByIntegerLiteral {
+extension Logger.MetadataValue: @retroactive ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
         self = .integer(value)
     }
 }
-extension Logger.MetadataValue: ExpressibleByFloatLiteral {
+extension Logger.MetadataValue: @retroactive ExpressibleByFloatLiteral {
     public init(floatLiteral value: FloatLiteralType) {
         self = .float(value)
     }
 }
-extension Logger.MetadataValue: ExpressibleByNilLiteral {
+extension Logger.MetadataValue: @retroactive ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self = .nil()
     }

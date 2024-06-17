@@ -9,7 +9,7 @@ import Foundation
 import Logging
 
 /// No output.
-public struct NoOutput: Output {
+public struct NoOutput: Output, Sendable {
     public var label: String
     public var level: Logging.Logger.Level
     

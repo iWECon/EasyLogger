@@ -8,6 +8,14 @@ final class EasyLoggerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         
+        Task {
+            if #available(iOS 16.0, *) {
+                WriteOutputConfigure.default.localCacheDirectory.append(path: "ahaha")
+            } else {
+                // Fallback on earlier versions
+            }
+        }
+        
         WriteOutputConfigure.default.maximumStorageTime = 200
         
         LoggingSystem.bootstrap { value in

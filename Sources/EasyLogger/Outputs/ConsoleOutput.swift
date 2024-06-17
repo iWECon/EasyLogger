@@ -60,7 +60,7 @@ fileprivate extension Logging.Logger.Level {
 /// refer: https://developer.apple.com/forums/thread/676706
 ///        https://superuser.com/questions/1532031/how-to-show-private-data-in-macos-unified-log
 ///
-public struct ConsoleOutput: Output {
+public struct ConsoleOutput: Output, Sendable {
     
     public var label: String
     public var level: Logging.Logger.Level
@@ -68,7 +68,7 @@ public struct ConsoleOutput: Output {
     /// skip send log to `Console.app` when using xcode run app.
     public var disableWhenRunXcode: Bool = true
     
-    let osLog: OSLog
+    nonisolated(unsafe) let osLog: OSLog
     
     public init(label: String, level: Logging.Logger.Level, disableWhenRunXcode: Bool = true, subsystem: String = Bundle.main.bundleIdentifier ?? "in.iiiam.logger") {
         self.label = label

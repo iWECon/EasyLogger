@@ -9,7 +9,7 @@ import Foundation
 import Logging
 
 /// Output in Debug.
-public struct DefaultOutput: Output {
+public struct DefaultOutput: Output, Sendable {
     
     public var label: String
     public var level: Logging.Logger.Level

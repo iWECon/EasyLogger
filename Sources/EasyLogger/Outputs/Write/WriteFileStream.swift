@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct WriteFileStream: TextOutputStream {
+public struct WriteFileStream: TextOutputStream, Sendable {
     
     private let fileHandle: FileHandle
     private let encoding: String.Encoding
