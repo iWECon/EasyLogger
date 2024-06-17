@@ -19,9 +19,9 @@ import WASILibc
 #endif
 
 /// This configuration should be changed before using `Logger`, or use `lazy var` to delay `Logger.init'.
-public struct WriteOutputConfigure {
+public struct WriteOutputConfigure: Sendable {
     
-    public static var `default` = WriteOutputConfigure()
+    nonisolated(unsafe) public static var `default` = WriteOutputConfigure()
     
     /// The maximum number of days of storage. Default is `7 days`.
     ///

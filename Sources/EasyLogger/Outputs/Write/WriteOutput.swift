@@ -20,10 +20,10 @@ extension URL {
 
 
 /// Write output to local. Related configuration is in `WriteOutputConfigure`.
-public struct WriteOutput: Output {
+public struct WriteOutput: Output, Sendable {
     public private(set) var label: String
     public private(set) var level: Logging.Logger.Level
-    private let stream: TextOutputStream?
+    nonisolated(unsafe) private let stream: TextOutputStream?
     
     public init(level: Logging.Logger.Level, stream: TextOutputStream) {
         self.label = "write-output"

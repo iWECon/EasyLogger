@@ -8,7 +8,7 @@
 import Foundation
 import Logging
 
-public protocol Transform {
+public protocol Transform: Sendable {
     
     func transform(
         level: Logging.Logger.Level,

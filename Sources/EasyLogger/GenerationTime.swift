@@ -11,7 +11,7 @@ public protocol GenerationTime {
     func timestamp() -> String
 }
 
-public struct DefaultGenerationTime: GenerationTime {
+public struct DefaultGenerationTime: GenerationTime, Sendable {
     
     public let dateFormat: String
     public init(dateFormat: String? = nil) {
