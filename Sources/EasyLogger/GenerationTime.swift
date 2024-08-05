@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol GenerationTime {
+public protocol GenerationTime: Sendable {
     func timestamp() -> String
 }
 

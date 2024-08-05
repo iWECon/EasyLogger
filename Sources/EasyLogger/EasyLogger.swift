@@ -1,9 +1,15 @@
 import Foundation
 import Logging
 
-struct LoggerQueue: Sendable {
+final class LoggerQueue: Sendable {
     
-    static var shared = LoggerQueue()
+    // or
+    // struct LoggerQueue: Sendable {
+    //      /// We've now indicated to the compiler we're taking responsibility ourselves
+    //      /// regarding thread-safety access of this global variable.
+    //      nonisolated(unsafe) static var shared: LoggerQueue!
+    // }
+    static let shared = LoggerQueue()
     
     let queue = SendableOperationQueue()
     private init() {
